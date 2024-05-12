@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 
+
 def scrape_website(url, visited=None, base_url='https://developer.apple.com', max_links=50):
     if visited is None:
         visited = set()
@@ -32,7 +33,8 @@ def scrape_website(url, visited=None, base_url='https://developer.apple.com', ma
 
         child_links = [base_url + link.get('href') for link in soup.find_all('a', href=True)
                        if link.get('href').startswith('/documentation/shadergraph') and '#' not in link.get('href')
-                       and base_url + link.get('href') not in visited and base_url + link.get('href') not in load_child_links()]
+                       and base_url + link.get('href') not in visited and base_url + link.get(
+                'href') not in load_child_links()]
 
         save_child_links(child_links)
 
@@ -43,18 +45,22 @@ def scrape_website(url, visited=None, base_url='https://developer.apple.com', ma
         print(f"Error while scraping {url}: {str(e)}")
         save_to_markdown('Error encountered', f'error_{url[-30:]}.md')  # Save errors with a unique identifier
 
+
 def save_to_markdown(content, filename):
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(content)
     print(f"Content from {filename} has been saved.")
 
-def scrape_loaded_links(base_url='https://developer.apple.com', max_links=50):
+
+def scrape_loaded_links(base_url='https://developer.apple.com', max_links=200):
+    os.makedirs('Documentation', exist_ok=True)  # Ensure the Documentation directory exists
     visited = load_child_links()  # Load all previously stored links
+
     for url in list(visited)[:max_links]:  # Limit the number of links to scrape in one run if needed
         try:
             title = re.sub('[^\w\s-]', '', url.split('/')[-1]).strip().replace(' ', '_')  # Generate title based on URL
-            if os.path.exists(f'{title}.md'):
-                print(f"Skipping {title}.md as it already exists.")
+            if os.path.exists(f'Documentation/{title}.md'):
+                print(f"Skipping Documentation/{title}.md as it already exists.")
                 continue
 
             service = Service('/opt/homebrew/bin/chromedriver')
@@ -67,11 +73,11 @@ def scrape_loaded_links(base_url='https://developer.apple.com', max_links=50):
             content_div = soup.find('div', {'data-v-2016a34c': True, 'class': 'content'})
             if content_div:
                 content = content_div.get_text(separator='\n')
-                save_to_markdown(f'# {title}\n{content}', f'{title}.md')
-        
+                save_to_markdown(f'# {title}\n{content}', f'Documentation/{title}.md')
+
         except Exception as e:
             print(f"Error while scraping {url}: {str(e)}")
-            error_filename = f'error_{title}.md'
+            error_filename = f'Documentation/error_{title}.md'
             save_to_markdown('Error encountered', error_filename)
 
 def save_child_links(child_links):
@@ -80,11 +86,13 @@ def save_child_links(child_links):
     with open('child_links.pkl', 'wb') as file:
         pickle.dump(existing_links, file)
 
+
 def load_child_links():
     if os.path.exists('child_links.pkl'):
         with open('child_links.pkl', 'rb') as file:
             return pickle.load(file)
     return set()
+
 
 def save_to_markdown(content, filename):
     with open(filename, 'w', encoding='utf-8') as file:
@@ -98,27 +106,25 @@ def save_child_links(child_links):
     with open('child_links.pkl', 'wb') as file:
         pickle.dump(existing_links, file)
 
-def load_child_links():
+
+initial_url = 'https://developer.apple.com/documentation/shadergraph'
+scraped_content = scrape_website(initial_url)
+
+
+def print_child_links():
     if os.path.exists('child_links.pkl'):
         with open('child_links.pkl', 'rb') as file:
-            return pickle.load(file)
-    return set()
+            links = pickle.load(file)
+            print("Child Links:")
+            for link in links:
+                print(link)
+    else:
+        print("No child links file found.")
 
-# initial_url = 'https://developer.apple.com/documentation/shadergraph'
-# scraped_content = scrape_website(initial_url)
-# def print_child_links():
-#     if os.path.exists('child_links.pkl'):
-#         with open('child_links.pkl', 'rb') as file:
-#             links = pickle.load(file)
-#             print("Child Links:")
-#             for link in links:
-#                 print(link)
-#     else:
-#         print("No child links file found.")
 
-# # Call this function to print the child links
-# print_child_links()
+# Call this function to print the child links
+print_child_links()
 
 # if scraped_content:
 #     save_to_markdown(scraped_content, 'scraped_content.md')
-scrape_loaded_links()
+scrape_loaded_links(base_url=initial_url, max_links=200)
