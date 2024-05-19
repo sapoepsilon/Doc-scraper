@@ -1,43 +1,21 @@
-# logic
+# shadergraph
  Documentation 
  Open Menu 
 /
  ShaderGraph 
-/
- Logic 
 Swift
 Language: 
 Swift
  API Changes: 
 None
-ShaderGraph Node Group
-Logic
-Perform Boolean operations and other logical comparisons on data values.
+Framework
+ShaderGraph
+Create custom materials and effects for 3D content in Reality Composer Pro.
 Overview
-Use Logic nodes to facilitate decision trees and other logic-based choices within your graph. You can perform comparisons for equality or to determine if one value is larger than another. You can also perform logic operations on Boolean values.
+Create complex materials and effects with Shader Graph, a node-based material editor within Reality Composer Pro. The editor presents an interface in which you can build out node graphs to achieve various visual effects.
+With the control Shader Graph provides over materials, you can create effects that might otherwise require writing Metal shaders. The nodes represent either a value or operation, and have inputs and outputs you can connect in order to build out a material. They serve the same purpose as a variable, constant, or function in Metal. Multiple versions of a node tweak the inputs and outputs it can recieve, similar to overloads of a function.
+Build out your material using the nodes that achieve your desired visual and geometric affects and apply these materials to entities within your Reality Composer Pro scene.
 Topics
-Nodes
-If Greater
-Outputs True Result or False Result depending on whether value1 > value2.
-If Greater Or Equal
-Outputs True Result or False Result depending on whether value1 >= value2.
-If Equal
-Outputs True Result or False Result depending on whether value1 == value2.
-Switch
-Outputs the value from one of ten input streams, according to a selector .
-And (Reality
-Kit)
-Boolean operation in1 && in2.
-Or (Reality
-Kit)
-Boolean operation in1 || in2.
-XOR (Reality
-Kit)
-Returns true if only one of the inputs is true.
-Not (Reality
-Kit)
-Returns !input.
-See Also
 Node Categories
 2D-Procedural
 Generate 2D gradients, noise, and other patterns programmatically for your material.
@@ -57,6 +35,8 @@ Data
 Convert data values to different formats, or manipulate individual elements within a data structure.
 Geometric
 Access scene geometry while your graph runs.
+Logic
+Perform Boolean operations and other logical comparisons on data values.
 Material
 Encapsulate a set of shader graph nodes into a single module.
 Math
@@ -69,4 +49,4 @@ Realitykit
 Add RealityKit surfaces or textures to your material and access and manipulate scene geometry.
 Surface
 Generate a MaterialX preview surface.
- Current page is Logic 
+ Current page is ShaderGraph 
