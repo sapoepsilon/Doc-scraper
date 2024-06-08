@@ -22,7 +22,7 @@ def get_save_path(url):
     filename = url.rstrip('/').split('/')[-1]
     return os.path.join(save_directory, filename)
 
-def scrape_website(url, visited=None, base_url='https://developer.apple.com', max_links=50):
+def scrape_website(url, base_url, visited=None, max_links=50):
     save_path = get_save_path(url)
     if not save_path.endswith('.md'):
         save_path += '.md'
