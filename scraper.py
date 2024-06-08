@@ -3,7 +3,7 @@ import re
 import os
 import pickle
 import logging
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
@@ -33,9 +33,9 @@ def scrape_website(url, visited=None, base_url='https://developer.apple.com', ma
     if url in visited:
         return
 
-    if os.path.exists(save_path):
-        logging.info(f"Skipping {save_path} befre scraping as it already exists.")
-        return
+    # if os.path.exists(save_path):
+    #     logging.info(f"Skipping {save_path} befre scraping as it already exists.")
+    #     return
     else:
         logging.info(f"Did not find {save_path} in the file system.")
 
@@ -118,7 +118,17 @@ def save_to_markdown(content, filename):
 def get_title_from_url(url):
     return re.sub(r'[^\w\s-]', '', url.split('/')[-1]).strip().replace(' ', '_')
 
-def scrape_loaded_links(base_url='https://developer.apple.com', max_links=200):
+def get_base_path(url, depth=2):
+    """
+    Extracts a base path from a URL up to a specified depth.
+    Example: "http://example.com/doc/shadergraph/last_work" with depth=2 would return '/doc/shadergraph'.
+    """
+    parsed_url = urlparse(url)
+    path_segments = parsed_url.path.strip('/').split('/')  # Split path into segments and remove any leading/trailing slashes
+    base_path = '/' + '/'.join(path_segments[:depth])  # Join the required number of segments
+    return base_path
+
+def scrape_loaded_links(base_url, max_links=200):
     visited = load_child_links()
 
     for url in list(visited)[:max_links]:  # Limit the number of links to scrape in one run if needed
@@ -149,8 +159,9 @@ def print_child_links():
     else:
         logging.info("No child links file found.")
 
-initial_url = 'https://developer.apple.com/documentation/shadergraph'
+initial_url = input("Please enter the initial URL to scrape: ")
 scrape_website(initial_url)
+base_path = get_base_path(initial_url, depth=2)  # Adjust 'depth' as needed based on URL structure
 
 # Call this function to print the child links
 print_child_links()
