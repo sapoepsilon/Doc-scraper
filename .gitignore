@@ -1,3 +1,4 @@
 /documentation/
 /.idea
 venv
+.DS_Store
